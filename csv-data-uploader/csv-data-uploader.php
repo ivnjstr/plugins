@@ -18,7 +18,7 @@
  function cdu_display_uploader_form(){
     // Start PHP Buffer
     ob_start();
-    include_once CDU_PLUGIN_DIR_PATH . "/template/cdu_form.php"; // put all the content into buffer
+    include_once CDU_PLUGIN_DIR_PATH. "/template/cdu_form.php"; // put all the content into buffer
     // Read buffer
     $template = ob_get_contents();
     //clean buffer
@@ -85,7 +85,7 @@ function cdu_add_script_file(){
     ));
 }
 
-//to capture Ajax request
+//Capture Ajax request
 add_action("wp_ajax_cdu_submit_form_data", "cdu_ajax_handler"); // When user log in
 
 //this will be the action name nag add ako sa form ng isang input na hidden
@@ -97,53 +97,136 @@ add_action("wp_ajax_cdu_submit_form_data", "cdu_ajax_handler"); // When user log
 add_action("wp_ajax_nopriv_cdu_submit_form_data", "cdu_ajax_handler"); // When user logged out
 
 // now create a function for handler 
-function cdu_ajax_handler(){
 
-    if($_FILES['csv_data_file']){
+// function cdu_ajax_handler(){
+//     if($_FILES['csv_data_file']){
 
+//         $csvFile = $_FILES['csv_data_file']['tmp_name'];
+
+//         if ($_FILES['csv_data_file']['error'] !== UPLOAD_ERR_OK) {
+//             echo json_encode(array(
+//                 "status" => 0,
+//                 "message" => "Error uploading file."
+//             ));
+//             exit;
+//         }
+
+//         $handle = fopen($csvFile, "r");
+
+//         global $wpdb;
+//         $table_name = $wpdb->prefix."students_data";
+
+//         if ($handle){
+            
+//             $row = 0;
+//             while(($data = fgetcsv($handle, 1000, ",")) !==FALSE){
+
+//                 if($row == 0){
+//                     $row++;
+//                     continue;
+//                 }
+
+//                 //Insert data into table
+//                 $wpdb->insert($table_name, array(
+//                     "name" => $data[1],
+//                     "email" => $data[2] ,
+//                     "age" => $data[3],
+//                     "phone" => $data[4],
+//                     "photo" => $data[5]
+
+//                 ));
+//             }
+
+//             fclose($handle);
+
+//             echo json_encode([
+//                 "status" => 1,
+//                 "message" => "Data uploaded Successfully!"
+//             ]);
+//         }
+//     }else{
+
+//         echo json_encode(array(
+//             "status" => 0,
+//             "message" => "Hello form CSV Data Uploader"
+            
+//         ));
+
+//     }
+//     exit;
+// }
+
+// Another alternation function cdu_ajax_handler
+function cdu_ajax_handler() {
+    if (!empty($_FILES['csv_data_file'])) {
         $csvFile = $_FILES['csv_data_file']['tmp_name'];
 
+        if ($_FILES['csv_data_file']['error'] !== UPLOAD_ERR_OK) {
+            echo json_encode(array(
+                "status" => 0,
+                "message" => "Error uploading file."
+            ));
+            exit;
+        }
+
         $handle = fopen($csvFile, "r");
+        if (!$handle) {
+            echo json_encode(array(
+                "status" => 0,
+                "message" => "Failed to open CSV file."
+            ));
+            exit;
+        }
 
         global $wpdb;
-        $table_name = $wpdb->prefix."students_data";
+        $table_name = $wpdb->prefix . "students_data";
 
-        if ($handle){
-            
-            $row = 0;
-            while(($data = fgetcsv($handle, 1000, ",")) !==FALSE){
-
-                if($row == 0){
-                    $row++;
-                    continue;
-                }
-
-                //Insert data into table
-                $wpdb->insert($table_name, array(
-                    "name" => $data[1],
-                    "email" => $data[2] ,
-                    "age" => $data[3],
-                    "phone" => $data[4],
-                    "photo" => $data[5]
-
-                ));
+        $row = 0;
+        $errors = [];
+        while (($data = fgetcsv($handle, 1000, ",")) !== false) {
+            if ($row == 0) {
+                $row++;
+                continue;
             }
 
-            fclose($handle);
+            $result = $wpdb->insert(
+                $table_name,
+                array(
+                    "name" => sanitize_text_field($data[1]),
+                    "email" => sanitize_email($data[2]),
+                    "age" => intval($data[3]),
+                    "phone" => sanitize_text_field($data[4]),
+                    "photo" => esc_url_raw($data[5])
+                )   
+                // Data Sanitization: Sanitization ensures data integrity and prevents potential security vulnerabilities.
+            );
 
+            if (false === $result) {
+                $errors[] = "Row $row: " . $wpdb->last_error;
+            }
+
+            $row++;
+        }
+
+        fclose($handle);
+
+        if (!empty($errors)) {
+            echo json_encode([
+                "status" => 0,
+                "message" => "Some rows failed to insert.",
+                "errors" => $errors
+            ]);
+        } else {
             echo json_encode([
                 "status" => 1,
-                "message" => "Data uploaded Successfully!"
+                "message" => "Data uploaded successfully!"
             ]);
         }
-    }else{
-
+    } else {
         echo json_encode(array(
             "status" => 0,
-            "message" => "Hello form CSV Data Uploader"
-            
+            "message" => "No file uploaded."
         ));
-
     }
     exit;
 }
