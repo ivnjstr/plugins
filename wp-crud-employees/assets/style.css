@@ -1,0 +1,111 @@
+#wp_employee_crud_plugin {
+    max-width: 800px;
+    margin: 0 auto;
+    font-family: Arial, sans-serif;
+    color: #333;
+    background-color: #f9f9f9;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    }
+    h2 {
+        text-align: center;
+        color: #0056b3;
+    }
+    .employee-form .form-group {
+        margin-bottom: 15px;
+    }
+    .employee-form label {
+        display: block;
+        margin-bottom: 5px;
+        font-weight: bold;
+    }
+    .employee-form input,
+    .employee-form select {
+        width: 100%;
+        padding: 8px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        font-size: 14px;
+    }
+    .employee-form .btn-primary {
+        display: inline-block;
+        background-color: #0056b3;
+        color: #fff;
+        border: none;
+        padding: 10px 15px;
+        text-align: center;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 16px;
+        width: 100%;
+    }
+    .employee-form .btn-primary:hover {
+        background-color: #003d80;
+    }
+    .employee-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 20px;
+    }
+    .employee-table th,
+    .employee-table td {
+        padding: 10px;
+        text-align: center;
+        border: 1px solid #ddd;
+    }
+    .employee-table th {
+        background-color: #0056b3;
+        color: #fff;
+    }
+    .employee-table td img.profile-img {
+        max-width: 50px;
+        border-radius: 50%;
+    }
+    .employee-table .btn-edit-employee,
+    .employee-table .btn-delete-employee {
+        padding: 5px 10px;
+        border: none;
+        color: #fff;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 14px;
+    }
+    .employee-table .btn-edit-employee {
+        background-color: #28a745;
+    }
+    .employee-table .btn-delete-employee {
+        background-color: #dc3545;
+    }
+    .employee-table .btn-edit-employee:hover {
+        background-color: #218838;
+    }
+    .employee-table .btn-delete-employee:hover {
+        background-color: #c82333;
+    }
+
+    #frm_add_employee label.error{
+        color: red;
+        font-style: italic;
+        font-size: 10px;
+        animation: shake 0.3s;
+    }
+    
+    @keyframes shake {
+        0% { transform: translateX(0); }
+        25% { transform: translateX(-5px); }
+        50% { transform: translateX(5px); }
+        75% { transform: translateX(-5px); }
+        100% { transform: translateX(0); }
+    }
+
+
+    .hide_element{
+        display: none;
+    }
+
+    .wp-block-post-title{
+        text-align: center !important;
+    }
+    
+    
